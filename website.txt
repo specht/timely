@@ -1,0 +1,21 @@
+Welcome to Timely - the history/news browser which pulls data from Wikipedia!
+
+Image:Timely screenshot
+
+There's a first glance release available for Windows and Mac OS X at the download page.
+
+Although there are numerous issues with this preliminary version, I encourage you to try it out and give me feedback at micha.specht@gmail.com external.
+edit
+Quick usage guide
+
+Click and drag the mouse to navigate through time, use the scroll wheel to zoom. A dot means that something has happened, the bigger the dot, the more events are there. In order to get descriptions to the dots, enter a search term.
+
+These are the main issues:
+
+   1. Links are not clickable yet.
+   2. The layout algorithm is still a bit jumpy (especially if there are many events visible).
+   3. There's an event dot in the year 4700 BC, although nothing has happened there.
+   4. The event repository is not regularly updated yet. It is from August 13, 2009.
+   5. Only events from year 1 to 2009 are currently listed.
+   6. Sometimes comments or Wiki links/references are still visible or the text formatting may be messed up.
+   7. The search is still very stupid, but simple queries like beatles or berlin wall will work. 

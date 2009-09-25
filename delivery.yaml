@@ -1,0 +1,9 @@
+projects:
+  - projects/timely
+#binaryPath: bin
+qt: [core, gui]
+# versionInject:
+#   src/src/version.h: |
+#     #pragma once
+#     #include <QtCore>
+#     QString gs_ProteomaticVersion = "#{VERSION}";
