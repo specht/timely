@@ -1,6 +1,7 @@
 require 'yaml'
 require 'set'
 require 'cgi'
+require 'rubygems'
 require 'wikitext'
 require 'date'
 
