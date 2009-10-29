@@ -506,10 +506,10 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 				lk_Painter.setPen(QPen(TANGO_ALUMINIUM_3));
 			}
             lk_ResultRect.setWidth(mi_TextBoxWidth);
-			lk_Painter.drawRoundedRect(QRectF(QPointF(x, y - lk_ResultRect.height() - 0.5), lk_ResultRect.size()), 4.0, 4.0);
+			lk_Painter.drawRoundedRect(QRectF(QPointF(x + mi_BoxPadding / 2, y - lk_ResultRect.height() - 0.5), lk_ResultRect.size()), 4.0, 4.0);
             lk_Painter.drawPixmap(QPointF(lr_Info.md_RealPosition - 5.0, y - 6.0), mk_Arrow);
 			//lk_Painter.drawText(QRectF(QPointF(x, y - lk_ResultRect.height()), lk_ResultRect.size()), Qt::TextWordWrap | Qt::AlignBottom | Qt::AlignLeft, lr_Info.ms_Text);
-			lk_Painter.setViewport(QRectF(QPointF(x, y - lk_ResultRect.height()), size()).toRect());
+			lk_Painter.setViewport(QRectF(QPointF(x + mi_BoxPadding / 2, y - lk_ResultRect.height()), size()).toRect());
 			doc.drawContents(&lk_Painter);
 			lk_Painter.setViewTransformEnabled(false);
 			double ld_Right = x + lk_ResultRect.width();
