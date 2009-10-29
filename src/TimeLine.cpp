@@ -8,6 +8,7 @@ typedef struct r_TextBoxInfo
 	int mi_BoxSpanId;
 	int mi_BoxSpanOffset;
 	double md_Position;
+    double md_RealPosition;
 	QChar mc_Type;
 };
 
@@ -19,6 +20,8 @@ k_TimeLine::k_TimeLine()
 	, mb_Steering(false)
 	, mi_EventCount(0)
 	, mi_TextBoxWidth(300)
+    , mi_BoxPadding(4)
+    , mk_Arrow(":icons/arrow.png")
 {
 	setFocusPolicy(Qt::StrongFocus);
 	QDateTime lk_CurrentDateTime = QDateTime::currentDateTime();
@@ -361,8 +364,8 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 	
 	lk_Painter.setRenderHint(QPainter::Antialiasing, true);
 	int li_VisibleEventCount = 0;
-	int li_LeftJd = (int)floor(ld_LeftJd - md_PixelTime * 320.0);
-	int li_RightJd = (int)ceil(ld_RightJd + md_PixelTime * 10.0);
+	int li_LeftJd = (int)floor(ld_LeftJd - md_PixelTime * (mi_TextBoxWidth + 20));
+	int li_RightJd = (int)ceil(ld_RightJd + md_PixelTime * (mi_TextBoxWidth + 20));
 	if (li_LeftJd < 0)
 		li_LeftJd = 0;
 	
@@ -385,6 +388,8 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 	QHash<int, double> lk_BoxSpanHeight;
 	QMultiMap<int, r_TextBoxInfo> lk_TextBoxes;
 	
+    double ld_BoxTime = md_PixelTime * (mi_TextBoxWidth + mi_BoxPadding);
+    int li_OldBoxSlot = -1;
 	for (int i = 0; i <= mi_EventCount; ++i)
 	{
 		bool lb_JumpIn = false;
@@ -423,7 +428,8 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 					{
 						if (!mk_HitIndices.contains(k))
 							continue;
-						double x = ((double)mi_EventJd_[k] - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
+						double x = ((floor((double)mi_EventJd_[k] / ld_BoxTime) * ld_BoxTime) - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
+                        double realx = ((double)mi_EventJd_[k] - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
 						int li_BoxId = mi_EventJd_[k] / li_BoxSnapWidth;
 						int li_BoxOffset = mi_EventJd_[k] % li_BoxSnapWidth;
 						QString ls_Text = "<p><b>" + QDate::fromJulianDay(mi_EventJd_[k]).toString() + "</b> &ndash; " + mk_EventDescriptions[k] + "</p>";
@@ -439,6 +445,7 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 						lr_TextBoxInfo.mi_BoxSpanId = li_BoxId;
 						lr_TextBoxInfo.mi_BoxSpanOffset = li_BoxOffset;
 						lr_TextBoxInfo.md_Position = x;
+                        lr_TextBoxInfo.md_RealPosition = realx;
 						lr_TextBoxInfo.mc_Type = mk_EventTypes[k];
 						lk_TextBoxes.insert(mi_EventJd_[k], lr_TextBoxInfo);
 					}
@@ -464,6 +471,7 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 // 	printf("\n");
 	double maxheight = 0.0;
 	double maxwidth = 0.0;
+    double ld_LastPosition = -1.0;
 	for (lk_Iter = lk_TextBoxes.constBegin(); lk_Iter != lk_TextBoxes.constEnd(); ++lk_Iter)
 	{
 		r_TextBoxInfo lr_Info = lk_Iter.value();
@@ -472,8 +480,9 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 		doc.setPageSize(QSizeF(mi_TextBoxWidth, height()));
 		doc.setHtml(lr_Info.ms_Text);
 		double x = lr_Info.md_Position;
-		if (x > maxwidth)
+		if (x > ld_LastPosition)
 			maxheight = 0.0;
+        ld_LastPosition = x;
 		if (maxheight < height())
 		{
 			double ld_BoxSpanHeight = maxheight;
@@ -496,14 +505,16 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 				lk_Painter.setBrush(QBrush(TANGO_ALUMINIUM_0));
 				lk_Painter.setPen(QPen(TANGO_ALUMINIUM_3));
 			}
+            lk_ResultRect.setWidth(mi_TextBoxWidth);
 			lk_Painter.drawRoundedRect(QRectF(QPointF(x, y - lk_ResultRect.height() - 0.5), lk_ResultRect.size()), 4.0, 4.0);
+            lk_Painter.drawPixmap(QPointF(lr_Info.md_RealPosition - 5.0, y - 6.0), mk_Arrow);
 			//lk_Painter.drawText(QRectF(QPointF(x, y - lk_ResultRect.height()), lk_ResultRect.size()), Qt::TextWordWrap | Qt::AlignBottom | Qt::AlignLeft, lr_Info.ms_Text);
 			lk_Painter.setViewport(QRectF(QPointF(x, y - lk_ResultRect.height()), size()).toRect());
 			doc.drawContents(&lk_Painter);
 			lk_Painter.setViewTransformEnabled(false);
 			double ld_Right = x + lk_ResultRect.width();
 			maxwidth = std::max<double>(ld_Right, maxwidth);
-			maxheight += lk_ResultRect.height() + 4;
+			maxheight += lk_ResultRect.height() + mi_BoxPadding;
 		}
 	}
 	lk_Painter.setRenderHint(QPainter::Antialiasing, false);

@@ -51,4 +51,6 @@ protected:
 	QSet<int> mk_HitIndices;
 	
 	int mi_TextBoxWidth;
+    int mi_BoxPadding;
+    QPixmap mk_Arrow;
 };

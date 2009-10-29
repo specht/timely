@@ -20,6 +20,8 @@ else {
 
 DESTDIR = ../../
 
+RESOURCES += ../../src/timely.qrc
+
 HEADERS += \
 	../../src/TimelyMainWindow.h \
 	../../src/TimeLine.h \
