@@ -202,8 +202,13 @@ def filterEvents(year, text)
 	end
 end
 
+path = ARGV.first
+unless path
+    puts "Error: No path specified."
+    exit(1)
+end
 
-File::open('timely.yaml', 'r') do |file|
+File::open(path, 'r') do |file|
 	YAML::each_document(file) do |yearHash|
 		year = yearHash.keys.first
 		text = yearHash.values.first

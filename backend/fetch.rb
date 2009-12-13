@@ -1,5 +1,7 @@
 require 'yaml'
 require 'rexml/text.rb'
+require 'fileutils'
+require 'date'
 
 
 def getYearWikiText(year)
@@ -13,10 +15,14 @@ def getYearWikiText(year)
 end
 
 
-file = File::open('timely.yaml', 'w')
-(1..2009).each do |year|
-	h = Hash.new
-	h[year] = getYearWikiText(year)
-	file.puts h.to_yaml
+FileUtils::mkpath('fetch')
+
+timestamp = Date.today().to_s()
+
+File::open("fetch/timely-#{timestamp}.yaml", 'w') do |file|
+    (1..2009).each do |year|
+        h = Hash.new
+        h[year] = getYearWikiText(year)
+        file.puts h.to_yaml
+    end
 end
-file.close()

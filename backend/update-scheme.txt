@@ -1,0 +1,40 @@
+Update scheme:
+--------------
+
+Every day, a new version of timely.txt is created. In order to make
+udpates as small as possible for the client, we should use diffs, given
+the fact that the file does not change much from day to day. The client's
+version however, can be any version from even a couple of years ago, and
+we only want to keep so many versions. That means if the client didn't update
+for too long, we won't use diffs for the update, but download a full copy of
+the current file. Another point is that if we keep like, say, 200 previous 
+versions, we would have to keep 200 full files, and every day would have to
+create diffs from each of the 200 states to the current state, which is both
+computationally intensive and very space-consuming (redundancy, aargh!)...
+
+So the idea is as follows: All in all, it's like in traveling, where you 
+take a small step, then a bigger step, then a big leap (over the Atlantic?), 
+and then smaller steps until you have reached your destination. Often, the
+small steps take almost as long as the big leap, given that the big leap is
+done at a much higher pace.
+
+Suppose we want to patch from state 0011 (3) to state 1001 (9). 
+
+One way to do this would be to collect the diffs between every two successive
+states, and replay them one after another, which means O(n) patches. 
+
+The corresponding patch sequence would be: 4, 5, 6, 7, 8, 9 (6 steps).
+
+On the other hand, we could use a scheme which only requires O(log n) steps,
+like this: 4, 8, 9 (3 steps). If somebody did not update for a whole year,
+this would be fixed with 9 steps instead of 365. The amount of data to be
+downloaded would remain about the same, but the patch is probably faster.
+
+We could
+do this in 6 steps, but we can do better than that: patch to 4, then to 8,
+then to 9 (this is three diffs only).
+
+Today is 2009-12-13, in JD: 2455179, binary: 1001010111011010001011
+
+For every passed day, there is one diff, which takes us to a more central 
+state. If the 
