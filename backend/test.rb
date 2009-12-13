@@ -4,7 +4,7 @@ require 'date'
 
 today = 22
 today = Date.today.jd()
-first = today - 365 * 100
+first = today - 365 * 10
 
 
 # step returns the next fast-forward state for a given jd
