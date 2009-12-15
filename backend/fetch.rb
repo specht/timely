@@ -6,7 +6,7 @@ require 'open-uri'
 require 'uri'
 require 'set'
 
-
+$dont = true
 $seenUris = Set.new
 
 def getYearWikiText(year)
@@ -29,6 +29,7 @@ def getYearWikiText(year)
     end
     return nil, nil if text.empty?
 	startIndex = text.index('<text')
+	return nil, nil unless startIndex >= 0
 	text = text[startIndex, text.size - startIndex]
 	startIndex = text.index('>') + 1
 	text = text[startIndex, text.size - startIndex]
@@ -47,6 +48,8 @@ timestamp = Date.today().jd()
 $file = nil
 
 def fetch(uri)
+    $dont = false if uri == '1st_millennium'
+    return if $dont
     content, uri = getYearWikiText(uri)
     if content
         h = Hash.new
@@ -61,12 +64,10 @@ end
 File::open("fetch/timely-#{timestamp}.yaml", 'a') do |$file|
     # fetch AD years
     (1..2059).each do |year|
-        next
         fetch("#{year}")
     end
     # fetch BC years
     (1..1000).each do |year|
-        next if year < 20
         fetch("#{year}_BC")
     end
     # fetch AD decades
@@ -80,33 +81,33 @@ File::open("fetch/timely-#{timestamp}.yaml", 'a') do |$file|
     # fetch AD centuries
     (1..40).each do |year|
         ending = 'th'
-        ending = 'st' if (year % 10) == 1
-        ending = 'nd' if (year % 10) == 2
-        ending = 'rd' if (year % 10) == 3
+        ending = 'st' if (year % 10) == 1 && year != 11
+        ending = 'nd' if (year % 10) == 2 && year != 12
+        ending = 'rd' if (year % 10) == 3 && year != 13
         fetch("#{year}#{ending}_century")
     end
     # fetch BC centuries
     (1..40).each do |year|
         ending = 'th'
-        ending = 'st' if (year % 10) == 1
-        ending = 'nd' if (year % 10) == 2
-        ending = 'rd' if (year % 10) == 3
+        ending = 'st' if (year % 10) == 1 && year != 11
+        ending = 'nd' if (year % 10) == 2 && year != 12
+        ending = 'rd' if (year % 10) == 3 && year != 13
         fetch("#{year}#{ending}_century_BC")
     end
     # fetch AD millenia
     (1..11).each do |year|
         ending = 'th'
-        ending = 'st' if (year % 10) == 1
-        ending = 'nd' if (year % 10) == 2
-        ending = 'rd' if (year % 10) == 3
-        fetch("#{year}#{ending}_millenium")
+        ending = 'st' if (year % 10) == 1 && year != 11
+        ending = 'nd' if (year % 10) == 2 && year != 12
+        ending = 'rd' if (year % 10) == 3 && year != 13
+        fetch("#{year}#{ending}_millennium")
     end
     # fetch BC millenia
     (1..11).each do |year|
         ending = 'th'
-        ending = 'st' if (year % 10) == 1
-        ending = 'nd' if (year % 10) == 2
-        ending = 'rd' if (year % 10) == 3
-        fetch("#{year}#{ending}_millenium_BC")
+        ending = 'st' if (year % 10) == 1 && year != 11
+        ending = 'nd' if (year % 10) == 2 && year != 12
+        ending = 'rd' if (year % 10) == 3 && year != 13
+        fetch("#{year}#{ending}_millennium_BC")
     end
 end
