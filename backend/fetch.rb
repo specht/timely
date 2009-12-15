@@ -10,14 +10,24 @@ require 'set'
 $seenUris = Set.new
 
 def getYearWikiText(year)
+    puts year
     if $seenUris.include?(year)
         return nil, nil
     end
-	#text = `curl http://en.wikipedia.org/wiki/Special:Export/#{year}`
     text = ''
-    open("http://en.wikipedia.org/wiki/Special:Export/#{year}", 'r') do |f|
-        text = f.read
+    tryCount = 0
+    while tryCount < 10
+        tryCount += 1
+        begin
+            open("http://en.wikipedia.org/wiki/Special:Export/#{year}", 'r') do |f|
+                text = f.read
+            end
+        rescue
+            next
+        end
+        break unless text.empty?
     end
+    return nil, nil if text.empty?
 	startIndex = text.index('<text')
 	text = text[startIndex, text.size - startIndex]
 	startIndex = text.index('>') + 1
@@ -48,13 +58,15 @@ def fetch(uri)
     end
 end
 
-File::open("fetch/timely-#{timestamp}.yaml", 'w') do |$file|
+File::open("fetch/timely-#{timestamp}.yaml", 'a') do |$file|
     # fetch AD years
     (1..2059).each do |year|
+        next
         fetch("#{year}")
     end
     # fetch BC years
     (1..1000).each do |year|
+        next if year < 20
         fetch("#{year}_BC")
     end
     # fetch AD decades
