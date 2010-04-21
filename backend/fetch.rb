@@ -6,7 +6,6 @@ require 'open-uri'
 require 'uri'
 require 'set'
 
-$dont = true
 $seenUris = Set.new
 
 def getYearWikiText(year)
@@ -48,8 +47,6 @@ timestamp = Date.today().jd()
 $file = nil
 
 def fetch(uri)
-    $dont = false if uri == '1st_millennium'
-    return if $dont
     content, uri = getYearWikiText(uri)
     if content
         h = Hash.new
@@ -61,7 +58,7 @@ def fetch(uri)
     end
 end
 
-File::open("fetch/timely-#{timestamp}.yaml", 'a') do |$file|
+File::open("fetch/timely-#{timestamp}.yaml", 'w') do |$file|
     # fetch AD years
     (1..2059).each do |year|
         fetch("#{year}")

@@ -623,9 +623,9 @@ void k_TimeLine::fixView()
 		ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
 		ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
 	}
-	if (ld_RightJd > 3437698.0)
+	if (ld_RightJd > 5373468.0)
 	{
-		md_CenterJd += 3437698.0 - ld_RightJd;
+		md_CenterJd += 5373468.0 - ld_RightJd;
 		ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
 		ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
 	}

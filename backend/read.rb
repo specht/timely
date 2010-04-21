@@ -59,7 +59,31 @@ def parseMonthAndDay(s)
 end
 
 
-def filterEvents(year, text)
+def filterEvents(inYear, text)
+    year = inYear.dup
+    isBC = false
+    if (year.upcase.include?('BC'))
+        isBC = true
+        year.sub!('BC', '')
+        year.strip!
+    end
+    
+    if year.class == String
+        if year.include?('millennium')
+            year = /\d+/.match(year)[0].to_i * 1000 
+        elsif year.include?('century')
+            year = /\d+/.match(year)[0].to_i * 100
+        elsif year =~ /\d+s/
+            year = /\d+/.match(year)[0].to_i * 10
+        else
+            year = year.to_i
+        end
+    end
+    
+    year = -year if isBC
+    
+    return if year < -4712
+    
 	dashes = ['-', '&ndash;', '&mdash;', '&#x2013;', '&#x2014;', '&#x2212;', '&nbsp;']
 	type = nil
 	seenTypes = Set.new
@@ -67,6 +91,9 @@ def filterEvents(year, text)
 	headerSet = Set.new
 	headerStack = Array.new
 	headerPath = ''
+    if text.class != String
+        return 
+    end
 	text.each_line do |line|
 		line.strip!
 		if line =~ /^[=]+[^=]+[=]+$/
@@ -212,11 +239,8 @@ File::open(path, 'r') do |file|
 	YAML::each_document(file) do |yearHash|
 		year = yearHash.keys.first
 		text = yearHash.values.first
-		if year > 0
-# 			puts year
-#			puts text
+#        puts year
  			filterEvents(year, text)
-		end
 	end
 end
 
