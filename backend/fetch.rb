@@ -18,7 +18,8 @@ def getYearWikiText(year)
     while tryCount < 10
         tryCount += 1
         begin
-            open("http://en.wikipedia.org/wiki/Special:Export/#{year}", 'r') do |f|
+            uri = "http://en.wikipedia.org/wiki/Special:Export/#{year}"
+            open(uri, 'r') do |f|
                 text = f.read
             end
         rescue
@@ -58,7 +59,10 @@ def fetch(uri)
     end
 end
 
-File::open("fetch/timely-#{timestamp}.yaml", 'w') do |$file|
+$file = nil
+
+File::open("fetch/timely-#{timestamp}.yaml", 'w') do |file|
+    $file = file
     # fetch AD years
     (1..2059).each do |year|
         fetch("#{year}")
