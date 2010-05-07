@@ -570,11 +570,15 @@ void k_TimeLine::mouseReleaseEvent(QMouseEvent* ak_Event_)
 
 void k_TimeLine::wheelEvent(QWheelEvent* ak_Event_)
 {
+    int dx = ak_Event_->pos().x() - width() / 2;
+    double ld_PointerTime = ((double)dx * md_PixelTime) + md_CenterJd;
     md_PixelTime *= 1.0 - (double)ak_Event_->delta() * 0.001;
+    md_CenterJd = ld_PointerTime - md_PixelTime * dx;
     fixView();
     update();
     setAnimationInterval();
 }
+
 
 void k_TimeLine::keyPressEvent(QKeyEvent* ak_Event_)
 {
