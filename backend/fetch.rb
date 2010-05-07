@@ -44,7 +44,7 @@ end
 
 FileUtils::mkpath('fetch')
 
-timestamp = Date.today().jd()
+timestamp = Date.today().to_s
 $file = nil
 
 def fetch(uri)
