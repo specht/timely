@@ -6,16 +6,16 @@
 
 class k_TimelyMainWindow: public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	k_TimelyMainWindow();
-	virtual ~k_TimelyMainWindow();
-	
+    k_TimelyMainWindow();
+    virtual ~k_TimelyMainWindow();
+    
 protected slots:
-	void searchButtonClicked();
-	
+    void searchButtonClicked();
+    
 protected:
-	k_TimeLine mk_TimeLine;
-	QLineEdit* mk_SearchLineEdit_;
-	QPushButton* mk_SearchButton_;
+    k_TimeLine mk_TimeLine;
+    QLineEdit* mk_SearchLineEdit_;
+    QPushButton* mk_SearchButton_;
 };
