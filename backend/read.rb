@@ -1,7 +1,8 @@
+require 'rubygems'
+require 'sqlite3'
 require 'yaml'
 require 'set'
 require 'cgi'
-require 'rubygems'
 require 'wikitext'
 require 'date'
 
@@ -18,6 +19,8 @@ $gk_Parser = Wikitext::Parser.new
 $gk_Parser.internal_link_prefix = 'http://en.wikipedia.org/wiki/'
 
 $gk_HeaderSet = Set.new
+$db = nil
+$textFile = nil
 
 
 def parseMonthAndDay(s)
@@ -210,7 +213,13 @@ def filterEvents(inYear, text)
 							dateScope = 1 if headerPath.include?('unknown') || headerPath.include?('undated')
 							marker = '-'
 							marker = 'f' if headerPath.include?('fiction')
- 							puts "#{jd} #{dateScope} #{marker} #{type[0, 1]} #{content} <!-- #{headerPath} #{Date.jd(jd).to_s} -->"
+                            $db.execute("insert into events values (:jd, :scope, :marker, :type, :content );", 
+                                        'jd' => jd, 
+                                        'scope' => dateScope, 
+                                        'marker' => marker, 
+                                        'type' => type[0, 1], 
+                                        'content' => content)
+                            $textFile.puts "#{jd} #{dateScope} #{marker} #{type[0, 1]} #{content} <!-- #{headerPath} #{Date.jd(jd).to_s} -->"
 # 							puts content if content[0, 1] == '&'
 # 	 						puts "#{date} #{jd}"
 #						qs = "INSERT INTO `events` (`type`, `datetime`, `content`) VALUES ('#{type}', '#{date} 00:00:00', '#{content.gsub(/[']/, '\\\\\'')}');"
@@ -235,8 +244,18 @@ unless path
     exit(1)
 end
 
+timestamp = File::basename(path).sub('.yaml', '').sub('timely-', '')
+
+FileUtils::rm_f("timely/timely-#{timestamp}.db")
+$db = SQLite3::Database.new("timely/timely-#{timestamp}.db")
+$db.execute("create virtual table events using fts3 (jd int, scope int, marker int, type varchar(1), text varchar);");
+$textFile = File::open("timely/timely-#{timestamp}.txt", 'w')
+
+count = 0
 File::open(path, 'r') do |file|
 	YAML::each_document(file) do |yearHash|
+        count += 1
+        break if count > 120
 		year = yearHash.keys.first
 		text = yearHash.values.first
 #        puts year
@@ -244,5 +263,6 @@ File::open(path, 'r') do |file|
 	end
 end
 
+$textFile.close
 
 #puts $gk_HeaderSet.to_a.sort.join("\n")
