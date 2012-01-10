@@ -210,7 +210,9 @@ def filterEvents(inYear, text)
 							dateScope = 1 if headerPath.include?('unknown') || headerPath.include?('undated')
 							marker = '-'
 							marker = 'f' if headerPath.include?('fiction')
- 							puts "#{jd} #{dateScope} #{marker} #{type[0, 1]} #{content} <!-- #{headerPath} #{Date.jd(jd).to_s} -->"
+							unless content.include?("\n")
+	 							puts "#{jd} #{dateScope} #{marker} #{type[0, 1]} #{content} <!-- #{headerPath} #{Date.jd(jd).to_s} -->"
+							end
 # 							puts content if content[0, 1] == '&'
 # 	 						puts "#{date} #{jd}"
 #						qs = "INSERT INTO `events` (`type`, `datetime`, `content`) VALUES ('#{type}', '#{date} 00:00:00', '#{content.gsub(/[']/, '\\\\\'')}');"

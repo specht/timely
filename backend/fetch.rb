@@ -29,7 +29,7 @@ def getYearWikiText(year)
     end
     return nil, nil if text.empty?
 	startIndex = text.index('<text')
-	return nil, nil unless startIndex >= 0
+	return nil, nil unless startIndex != nil && startIndex >= 0
 	text = text[startIndex, text.size - startIndex]
 	startIndex = text.index('>') + 1
 	text = text[startIndex, text.size - startIndex]
