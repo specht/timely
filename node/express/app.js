@@ -44,6 +44,17 @@ app.get('/events/:center/:width', function(req, res)
     res.send('events, centered at ' + req.params.center + ', width of ' + req.params.width);
 });
 
+app.get('/search/:q', function(req, res)
+{
+    q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `t` ASC LIMIT 0, 100;";
+    db_client.query(q, function success(err, results, fields) 
+    {
+        if (err)
+            throw err;
+        res.json(results);
+    });
+});
+
 app.get('/events', function(req, res)
 {
     center = 2455913.0;
