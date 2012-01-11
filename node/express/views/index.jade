@@ -1,15 +1,14 @@
-h1= title
-
-p Welcome to #{title}.
-
-p This is what you get when you mess with us.
+ul#events
 
 script(type='text/javascript')
     $.ajax({
         url: '/events',
         success: function(data)
         {
-            console.log(data);
+            $.each(data, function(index, element)
+            {
+                $('ul#events').append("<li id='e" + element.id + "'>" + element.content + "</li>");
+            });
         }
     });
     

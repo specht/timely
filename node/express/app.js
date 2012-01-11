@@ -46,7 +46,9 @@ app.get('/events/:center/:width', function(req, res)
 
 app.get('/events', function(req, res)
 {
-    q = "SELECT * FROM `events` ORDER BY `t` LIMIT 0, 30;";
+    center = 2455913.0;
+    width = 100.0;
+    q = "SELECT * FROM `events` WHERE `t` > " + (center - width * 0.5) + " AND `t` < " + (center + width * 0.5) + " ORDER BY `t` ASC LIMIT 0, 100;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)
