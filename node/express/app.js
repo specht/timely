@@ -46,7 +46,7 @@ app.get('/events/:center/:width', function(req, res)
 
 app.get('/search/:q', function(req, res)
 {
-    q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `t` ASC LIMIT 0, 100;";
+    q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `relevance` DESC LIMIT 0, 100;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)
@@ -59,7 +59,7 @@ app.get('/events', function(req, res)
 {
     center = 2455913.0;
     width = 100.0;
-    q = "SELECT * FROM `events` WHERE `t` > " + (center - width * 0.5) + " AND `t` < " + (center + width * 0.5) + " ORDER BY `t` ASC LIMIT 0, 100;";
+    q = "SELECT * FROM `events` WHERE `t` > " + (center - width * 0.5) + " AND `t` < " + (center + width * 0.5) + " ORDER BY `relevance` DESC LIMIT 0, 100;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)

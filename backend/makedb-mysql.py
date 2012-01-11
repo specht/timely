@@ -2,12 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import os
+import csv
 
+pageCounts = dict()
+
+with open('../wp-stats/pagecounts.csv') as f:
+    for row in csv.reader(f):
+        pageCounts[row[0]] = int(row[1])
+        
 with open('timely-mysql.sql', 'w') as fout:
     # write schema
     fout.write("CREATE TABLE IF NOT EXISTS `events` (\n\
   `id` int(11) NOT NULL AUTO_INCREMENT,\n\
   `t` int(11) NOT NULL,\n\
+  `relevance` int(11) NOT NULL,\n\
   `res` int(11) NOT NULL,\n\
   `fiction` int(11) NOT NULL,\n\
   `type` char(1) NOT NULL,\n\
@@ -15,6 +23,7 @@ with open('timely-mysql.sql', 'w') as fout:
   `path` varchar(255) NOT NULL,\n\
   PRIMARY KEY (`id`),\n\
   KEY `index_events_t` (`t`),\n\
+  KEY `index_events_relevance` (`relevance`),\n\
   FULLTEXT KEY `index_events_content` (`content`)\n\
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;\n")
     
@@ -34,7 +43,24 @@ with open('timely-mysql.sql', 'w') as fout:
                 content = line[0:line.rindex('<!--')].strip()
                 path = line[line.rindex('<!--'):].replace('<!--', '').replace('-->', '').strip()
                 path = path[0:path.rindex(' ')].strip()
-            fout.write("INSERT INTO events (t, res, fiction, type, content, path) VALUES (" + 
-                t + ", " + res + ", " + ('1' if fiction == 'f' else '0') + ", '" + v_type + "', '" +
+            
+            # now determine relevance of the event
+            p = -1
+            pages = set()
+            while True:
+                p = content.find('http://en.wikipedia.org/wiki/', p + 1)
+                if p < 0:
+                    break
+                page = line[p:line.index('"', p)][29:]
+                pages.add(page)
+            maxRelevance = 0
+            for page in pages:
+                if page in pageCounts:
+                    relevance = pageCounts[page];
+                    if relevance > maxRelevance:
+                        maxRelevance = relevance
+            
+            fout.write("INSERT INTO events (t, relevance, res, fiction, type, content, path) VALUES (" + 
+                t + ", " + str(maxRelevance) + ", " + res + ", " + ('1' if fiction == 'f' else '0') + ", '" + v_type + "', '" +
                 content.replace("'", "''") + "', '" + path + "');\n")
             
