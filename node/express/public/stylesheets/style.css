@@ -1,21 +1,33 @@
 body {
   padding: 6em;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-image: url('../images/noise-bg-tile.png');
-}
-
-#shine
-{
-    width: 2048px;
-    height: 1024px;
-    background-image: url('../images/noise-bg-top.png');
-    position: absolute;
-    top: 0;
-    margin-left: auto;
-    margin-right: auto;
-    z-index: -10;
 }
 
 a {
-  color: #00B7FF;
+  color: #3465a4;
+}
+
+ul#events
+{
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    width: 95%;
+    height: 95%;
+    position: relative;
+}
+
+ul#events li
+{
+    display: box;
+    max-width: 512px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: #eee;
+    font-size: 11px;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    list-style-type: none;
 }
