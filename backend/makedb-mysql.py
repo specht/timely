@@ -57,8 +57,9 @@ with open('timely-mysql.sql', 'w') as fout:
             for page in pages:
                 if page in pageCounts:
                     relevance = pageCounts[page];
-                    if relevance > maxRelevance:
-                        maxRelevance = relevance
+                    maxRelevance += relevance
+            if len(pages) > 0:
+                maxRelevance /= len(pages)
             
             fout.write("INSERT INTO events (t, relevance, res, fiction, type, content, path) VALUES (" + 
                 t + ", " + str(maxRelevance) + ", " + res + ", " + ('1' if fiction == 'f' else '0') + ", '" + v_type + "', '" +
