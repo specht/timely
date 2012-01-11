@@ -5,6 +5,18 @@ import os
 
 with open('timely-mysql.sql', 'w') as fout:
     # write schema
+    fout.write("CREATE TABLE IF NOT EXISTS `events` (\n\
+  `id` int(11) NOT NULL AUTO_INCREMENT,\n\
+  `t` int(11) NOT NULL,\n\
+  `res` int(11) NOT NULL,\n\
+  `fiction` int(11) NOT NULL,\n\
+  `type` char(1) NOT NULL,\n\
+  `content` text NOT NULL,\n\
+  `path` varchar(255) NOT NULL,\n\
+  PRIMARY KEY (`id`),\n\
+  KEY `index_events_t` (`t`),\n\
+  FULLTEXT KEY `index_events_content` (`content`)\n\
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;\n")
     
     with open('timely/timely-2012-01-10.txt', 'r') as fin:
         for line in fin:

@@ -1,7 +1,15 @@
 var express = require('express')
   , routes = require('./routes')
+  , mysql = require('mysql')
+  , util = require('util');
 
 var app = module.exports = express.createServer();
+
+var db_client = mysql.createClient({
+  user: 'se_user',
+  password: 'se',
+});
+db_client.query('USE timely;');
 
 // Configuration
 
@@ -38,7 +46,13 @@ app.get('/events/:center/:width', function(req, res)
 
 app.get('/events', function(req, res)
 {
-    res.send('got millions of events!');
+    q = "SELECT * FROM `events` ORDER BY `t` LIMIT 0, 30;";
+    db_client.query(q, function success(err, results, fields) 
+    {
+        if (err)
+            throw err;
+        res.json(results);
+    });
 });
 
 app.listen(19810);

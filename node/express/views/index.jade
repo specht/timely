@@ -3,3 +3,13 @@ h1= title
 p Welcome to #{title}.
 
 p This is what you get when you mess with us.
+
+script(type='text/javascript')
+    $.ajax({
+        url: '/events',
+        success: function(data)
+        {
+            console.log(data);
+        }
+    });
+    
