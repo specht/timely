@@ -1,6 +1,19 @@
 body {
-  padding: 50px;
+  padding: 6em;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url('../images/noise-bg-tile.png');
+}
+
+#shine
+{
+    width: 2048px;
+    height: 1024px;
+    background-image: url('../images/noise-bg-top.png');
+    position: absolute;
+    top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: -10;
 }
 
 a {
