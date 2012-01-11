@@ -7,9 +7,12 @@ script(type='text/javascript')
         url: '/events',
         success: function(data)
         {
+            mint = data[0].t;
+            maxt = data[data.length - 1].t;
             $.each(data, function(index, element)
             {
                 $('ul#events').append("<li id='e" + element.id + "'>" + element.content + "</li>");
+                $('#e' + element.id).css('top', '' + Math.floor((element.t - mint) / (maxt - mint) * 500) + 'px');
             });
         }
     });
@@ -24,9 +27,12 @@ script(type='text/javascript')
                 url: '/search/' + $("input.search").val(),
                 success: function(data)
                 {
+                    mint = data[0].t;
+                    maxt = data[data.length - 1].t;
                     $.each(data, function(index, element)
                     {
                         $('ul#events').append("<li id='e" + element.id + "'>" + element.content + "</li>");
+                        $('#e' + element.id).css('top', '' + Math.floor((element.t - mint) / (maxt - mint) * 500) + 'px');
                     });
                 }
             });

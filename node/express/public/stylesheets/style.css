@@ -11,19 +11,19 @@ ul#events
 {
     background-color: #fff;
     border: 1px solid #ddd;
-    border-radius: 16px;
-    width: 95%;
-    height: 95%;
+    border-radius: 8px;
+    width: 1024px;
+    height: 500px;
     position: relative;
+    overflow: hidden;
 }
 
 ul#events li
 {
-    display: box;
+    display: block;
     max-width: 512px;
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 8px;
     background-color: #eee;
     font-size: 11px;
     padding: 8px;
