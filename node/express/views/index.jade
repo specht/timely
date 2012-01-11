@@ -1,3 +1,5 @@
+input.search
+
 ul#events
 
 script(type='text/javascript')
@@ -12,3 +14,21 @@ script(type='text/javascript')
         }
     });
     
+    $("input.search").keypress(function(e)
+    {
+        if (e.which == 13)
+        {
+            $("li").remove();
+            console.log('/search/' + $("input.search").val());
+            $.ajax({
+                url: '/search/' + $("input.search").val(),
+                success: function(data)
+                {
+                    $.each(data, function(index, element)
+                    {
+                        $('ul#events').append("<li id='e" + element.id + "'>" + element.content + "</li>");
+                    });
+                }
+            });
+        }
+    });
