@@ -55,11 +55,13 @@ app.get('/search/:q', function(req, res)
     });
 });
 
-app.get('/events', function(req, res)
+app.get('/events/:from/:to/:offset', function(req, res)
 {
-    center = 2455913.0;
-    width = 100.0;
-    q = "SELECT * FROM `events` WHERE `t` > " + (center - width * 0.5) + " AND `t` < " + (center + width * 0.5) + " ORDER BY `relevance` DESC LIMIT 0, 100;";
+//     center = 2455913.0;
+//     width = 100.0;
+    q = "SELECT * FROM `events` WHERE `t` >= " + req.params.from + 
+        " AND `t` <= " + req.params.to + 
+        " ORDER BY `relevance` DESC LIMIT " + req.params.offset + ", 32;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)

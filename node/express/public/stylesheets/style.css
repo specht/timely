@@ -1,33 +1,35 @@
 body {
-  padding: 6em;
+  padding: 1em;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #d3d7cf;
 }
 
 a {
   color: #3465a4;
 }
 
-ul#events
+div#canvas
 {
     background-color: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #888a85;
     border-radius: 8px;
-    width: 1024px;
-    height: 500px;
-    position: relative;
+    top: 1em;
+    left: 1em;
+    right: 1em;
+    bottom: 1em;
+    position: absolute;
     overflow: hidden;
 }
 
-ul#events li
+div.box
 {
     display: block;
-    max-width: 512px;
+    max-width: 300px;
     position: absolute;
     left: 8px;
-    background-color: #eee;
+    background-color: #eeeeec;
     font-size: 11px;
     padding: 8px;
     border: 1px solid #aaa;
     border-radius: 8px;
-    list-style-type: none;
 }

@@ -5,10 +5,7 @@
 typedef struct r_TextBoxInfo
 {
     QString ms_Text;
-    int mi_BoxSpanId;
-    int mi_BoxSpanOffset;
-    double md_Position;
-    double md_RealPosition;
+    double x, y;
     QChar mc_Type;
 };
 
@@ -19,7 +16,7 @@ k_TimeLine::k_TimeLine()
     , mb_Moving(false)
     , mb_Steering(false)
     , mi_EventCount(0)
-    , mi_TextBoxWidth(300)
+    , mi_TextBoxWidth(180)
     , mi_BoxPadding(4)
     , mk_Arrow(":icons/arrow.png")
 {
@@ -130,9 +127,9 @@ void k_TimeLine::loadData()
 
 void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
 {
-    double ld_CenterX = (double)width() * 0.5;
-    double ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
-    double ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
+    double ld_CenterY = (double)height() * 0.5;
+    double ld_LeftJd = md_CenterJd - ld_CenterY * md_PixelTime;
+    double ld_RightJd = md_CenterJd + ld_CenterY * md_PixelTime;
     
     QDate lk_LeftDate = QDate::fromJulianDay((int)floor(ld_LeftJd));
     QDate lk_RightDate = QDate::fromJulianDay((int)floor(ld_RightJd));
@@ -197,34 +194,34 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
         ++li_RowCount;
     
     lk_Painter.fillRect(0, 0, width(), height(), QBrush(Qt::white));
-    lk_Painter.fillRect(0.0, height() - ld_TextRowHeight * li_RowCount, width(), ld_TextRowHeight * li_RowCount, QBrush(TANGO_ALUMINIUM_0));
+    lk_Painter.fillRect(0.0, 0.0, ld_TextRowHeight * li_RowCount, height(), QBrush(TANGO_ALUMINIUM_0));
     
-    double ld_BorderX = 0.0;
+    double ld_BorderY = 0.0;
     QDateTime lk_BorderDate;
     
 /*    if (li_DrawHourLabels > 0)
     {
-        ld_BorderX = 0.0;
+        ld_BorderY = 0.0;
         lk_BorderDate = QDateTime(lk_LeftDate);
         
-        while (ld_BorderX < width())
+        while (ld_BorderY < width())
         {
-            ld_BorderX = ((double)lk_BorderDate.date().toJulianDay() + (double)lk_BorderDate.time().hour() / 24.0 - md_CenterJd) / md_PixelTime + ld_CenterX;
+            ld_BorderY = ((double)lk_BorderDate.date().toJulianDay() + (double)lk_BorderDate.time().hour() / 24.0 - md_CenterJd) / md_PixelTime + ld_CenterY;
             lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
-            lk_Painter.drawLine(ld_BorderX, height() - ld_TextRowHeight * 4.0, ld_BorderX, height() - ld_TextRowHeight * 3.0);
+            lk_Painter.drawLine(ld_BorderY, height() - ld_TextRowHeight * 4.0, ld_BorderY, height() - ld_TextRowHeight * 3.0);
             QDateTime lk_NextDate = lk_BorderDate.addSecs(3600);
             if (li_DrawHourLabels > 1)
             {
                 QString ls_Text = QVariant(lk_BorderDate.time().hour()).toString();
-                if (ld_BorderX < 0.0)
+                if (ld_BorderY < 0.0)
                 {
-                    ld_BorderX = 0.0;
-                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() + (double)lk_NextDate.time().hour() / 24.0 - md_CenterJd) / md_PixelTime + ld_CenterX);
+                    ld_BorderY = 0.0;
+                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() + (double)lk_NextDate.time().hour() / 24.0 - md_CenterJd) / md_PixelTime + ld_CenterY);
                     if (ld_Delta > 0.0)
-                        ld_BorderX -= ld_Delta;
+                        ld_BorderY -= ld_Delta;
                 }
                 lk_Painter.setPen(QPen(TANGO_ALUMINIUM_4));
-                lk_Painter.drawText(ld_FontHPadding + ld_BorderX, height() - ld_TextRowHeight * 3.0 - ld_FontDescent, ls_Text);
+                lk_Painter.drawText(ld_FontHPadding + ld_BorderY, height() - ld_TextRowHeight * 3.0 - ld_FontDescent, ls_Text);
             }
             lk_BorderDate = lk_NextDate;
         }
@@ -232,14 +229,14 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
     
     if (li_DrawDayLabels > 0)
     {
-        ld_BorderX = 0.0;
+        ld_BorderY = 0.0;
         lk_BorderDate = QDateTime(lk_LeftDate);
         
-        while (ld_BorderX < width())
+        while (ld_BorderY < height())
         {
-            ld_BorderX = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX;
+            ld_BorderY = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY;
             if (lk_BorderDate.date().dayOfWeek() >= 6)
-                lk_Painter.fillRect(ld_BorderX, height() - ld_TextRowHeight * 3.0, 1.0 / md_PixelTime + 1.0,ld_TextRowHeight, QBrush(TANGO_ALUMINIUM_1));
+                lk_Painter.fillRect(ld_TextRowHeight * 2.0, ld_BorderY, ld_TextRowHeight, 1.0 / md_PixelTime + 1.0, QBrush(TANGO_ALUMINIUM_1));
             QDateTime lk_NextDate = QDateTime(lk_BorderDate.date().addDays(1));
             lk_BorderDate = lk_NextDate;
         }
@@ -256,47 +253,51 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
     if (ld_NowJd >= ld_LeftJd && ld_NowJd <= ld_RightJd)
     {
         lk_Painter.setPen(QPen(TANGO_CHAMELEON_2));
-        double x = (ld_NowJd - md_CenterJd) / md_PixelTime + ld_CenterX;
-        lk_Painter.drawLine(x, height(), x, height() - ld_TextRowHeight * li_RowCount);
+        double y = (ld_NowJd - md_CenterJd) / md_PixelTime + ld_CenterY;
+        lk_Painter.drawLine(0, y, ld_TextRowHeight * li_RowCount, y);
     }
     
     if (li_DrawDayLabels > 0)
     {
-        ld_BorderX = 0.0;
+        ld_BorderY = 0.0;
         lk_BorderDate = QDateTime(lk_LeftDate);
         
-        while (ld_BorderX < width())
+        while (ld_BorderY < height())
         {
-            ld_BorderX = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX;
+            ld_BorderY = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY;
             lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
-            lk_Painter.drawLine(ld_BorderX, height() - ld_TextRowHeight * 3.0, ld_BorderX, height() - ld_TextRowHeight * 2.0);
+            lk_Painter.drawLine(ld_TextRowHeight * 2.0, ld_BorderY, ld_TextRowHeight * 3.0, ld_BorderY);
             QDateTime lk_NextDate = QDateTime(lk_BorderDate.date().addDays(1));
             if (li_DrawDayLabels > 1)
             {
                 QString ls_Text = QVariant(lk_BorderDate.date().day()).toString();
-                if (ld_BorderX < 0.0)
+                if (ld_BorderY < 0.0)
                 {
-                    ld_BorderX = 0.0;
-                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX);
+                    ld_BorderY = 0.0;
+                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY);
                     if (ld_Delta > 0.0)
-                        ld_BorderX -= ld_Delta;
+                        ld_BorderY -= ld_Delta;
                 }
                 lk_Painter.setPen(QPen(TANGO_ALUMINIUM_4));
-                lk_Painter.drawText(ld_FontHPadding + ld_BorderX, height() - ld_TextRowHeight * 2.0 - ld_FontDescent, ls_Text);
+                lk_Painter.save();
+                lk_Painter.translate(ld_TextRowHeight * 2.0 + ld_FontDescent, ld_FontHPadding + ld_BorderY);
+                lk_Painter.rotate(90);
+                lk_Painter.drawText(0, 0, ls_Text);
+                lk_Painter.restore();
             }
             lk_BorderDate = lk_NextDate;
         }
     }
     if (li_DrawMonthLabels > 0)
     {
-        ld_BorderX = 0.0;
+        ld_BorderY = 0.0;
         lk_BorderDate.setDate(QDate(lk_LeftDate.year(), lk_LeftDate.month(), 1));
         
-        while (ld_BorderX < width())
+        while (ld_BorderY < height())
         {
-            ld_BorderX = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX;
+            ld_BorderY = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY;
             lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
-            lk_Painter.drawLine(ld_BorderX, height() - ld_TextRowHeight * 2.0, ld_BorderX, height() - ld_TextRowHeight);
+            lk_Painter.drawLine(ld_TextRowHeight * 1.0, ld_BorderY, ld_TextRowHeight * 2.0, ld_BorderY);
             QDateTime lk_NextDate = QDateTime(lk_BorderDate.date().addMonths(1));
             if (li_DrawMonthLabels > 0)
             {
@@ -305,15 +306,19 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
                     ls_Text = QDate::shortMonthName(lk_BorderDate.date().month());
                 else if (li_DrawMonthLabels == 2)
                     ls_Text = QDate::longMonthName(lk_BorderDate.date().month());
-                if (ld_BorderX < 0.0)
+                if (ld_BorderY < 0.0)
                 {
-                    ld_BorderX = 0.0;
-                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX);
+                    ld_BorderY = 0.0;
+                    double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY);
                     if (ld_Delta > 0.0)
-                        ld_BorderX -= ld_Delta;
+                        ld_BorderY -= ld_Delta;
                 }
                 lk_Painter.setPen(QPen(TANGO_ALUMINIUM_4));
-                lk_Painter.drawText(ld_FontHPadding + ld_BorderX, height() - ld_TextRowHeight - ld_FontDescent, ls_Text);
+                lk_Painter.save();
+                lk_Painter.translate(ld_TextRowHeight + ld_FontDescent, ld_FontHPadding + ld_BorderY);
+                lk_Painter.rotate(90);
+                lk_Painter.drawText(0, 0, ls_Text);
+                lk_Painter.restore();
             }
             lk_BorderDate = lk_NextDate;
         }
@@ -322,7 +327,7 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
     int li_YearSkip = 1;
     while (366.0 * li_YearSkip / md_PixelTime < ld_MaxYearLabelWidth + ld_FontHPadding * 2.0)
         li_YearSkip *= 10;
-    ld_BorderX = 0.0;
+    ld_BorderY = 0.0;
     int li_BorderYear = floor((qreal)lk_LeftDate.year() / li_YearSkip) * li_YearSkip;
     if (li_BorderYear == 0)
         li_BorderYear = 1;
@@ -330,32 +335,37 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
         li_BorderYear = -4700;
     lk_BorderDate.setDate(QDate(li_BorderYear, 1, 1));
     
-    while (ld_BorderX < width())
+    while (ld_BorderY < height())
     {
-        ld_BorderX = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX;
+        ld_BorderY = ((double)lk_BorderDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY;
         lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
-        lk_Painter.drawLine(ld_BorderX, height() - ld_TextRowHeight, ld_BorderX, height());
+        lk_Painter.drawLine(0.0, ld_BorderY, ld_TextRowHeight, ld_BorderY);
         QString ls_Text = QVariant(abs(lk_BorderDate.date().year())).toString();
         QDateTime lk_NextDate = lk_BorderDate;
         if (lk_BorderDate.date().year() == 1 && li_YearSkip > 1)
             lk_NextDate = QDateTime(lk_BorderDate.addYears(li_YearSkip - 1));
         else
             lk_NextDate = QDateTime(lk_BorderDate.addYears(li_YearSkip));
-        if (ld_BorderX < 0.0)
+        if (ld_BorderY < 0.0)
         {
-            ld_BorderX = 0.0;
+            ld_BorderY = 0.0;
             
-            double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterX);
+            double ld_Delta = (lk_FontMetrics.width(ls_Text) + ld_FontHPadding * 2.0) - (((double)lk_NextDate.date().toJulianDay() - md_CenterJd) / md_PixelTime + ld_CenterY);
             if (ld_Delta > 0.0)
-                ld_BorderX -= ld_Delta;
+                ld_BorderY -= ld_Delta;
         }
         lk_Painter.setPen(QPen(TANGO_ALUMINIUM_4));
         if (lk_BorderDate.date().year() < 0)
             ls_Text += " BC";
-        lk_Painter.drawText(ld_FontHPadding + ld_BorderX, height() - ld_FontDescent, ls_Text);
+        lk_Painter.save();
+        lk_Painter.translate(ld_FontDescent, ld_FontHPadding + ld_BorderY);
+        lk_Painter.rotate(90);
+        lk_Painter.drawText(0, 0, ls_Text);
+        lk_Painter.restore();
         lk_BorderDate = lk_NextDate;
     }
     
+    /*
     lk_Painter.setPen(QPen(TANGO_ALUMINIUM_4));
     
 //     lk_Painter.drawText(ld_FontHPadding, ld_TextRowHeight, lk_LeftDate.toString());
@@ -364,10 +374,12 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
     
     lk_Painter.setRenderHint(QPainter::Antialiasing, true);
     int li_VisibleEventCount = 0;
-    int li_LeftJd = (int)floor(ld_LeftJd - md_PixelTime * (mi_TextBoxWidth + 20));
-    int li_RightJd = (int)ceil(ld_RightJd + md_PixelTime * (mi_TextBoxWidth + 20));
+    */
+    int li_LeftJd = (int)floor(ld_LeftJd - md_PixelTime * 500.0);
+    int li_RightJd = (int)ceil(ld_RightJd + md_PixelTime * 500.0);
     if (li_LeftJd < 0)
         li_LeftJd = 0;
+    /*
     
     // determine event snapping width
     int li_SnapWidth = 1;
@@ -386,10 +398,9 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
     QString ls_LastDescription;
     
     QHash<int, double> lk_BoxSpanHeight;
+    */
     QMultiMap<int, r_TextBoxInfo> lk_TextBoxes;
     
-    double ld_BoxTime = md_PixelTime * (mi_TextBoxWidth + mi_BoxPadding);
-    int li_OldBoxSlot = -1;
     for (int i = 0; i <= mi_EventCount; ++i)
     {
         bool lb_JumpIn = false;
@@ -400,130 +411,122 @@ void k_TimeLine::paintEvent(QPaintEvent* ak_Event_)
         
         if (lb_JumpIn)
         {
-            int li_Jd = -1;
-            if (i < mi_EventCount)
+            int li_Jd = mi_EventJd_[i];
+            if (mk_HitIndices.contains(i))
             {
-                li_Jd = mi_EventJd_[i];
-                li_Jd = (li_Jd / li_SnapWidth) * li_SnapWidth;
-            }
-            
-            if (li_Jd != li_OldJd)
-            {
-                int li_OldJdEndIndex = li_LastInIndex;
-                int li_OldJdEventCount = li_OldJdEndIndex - li_OldJdStartIndex + 1;
-                if (li_OldJdStartIndex >= 0 && li_OldJdEventCount > 0)
-                {
-                    // draw the li_OldJd (group)
-                    char* lc_Color_ = TANGO_ALUMINIUM_2;
-                    for (int k = li_OldJdStartIndex; k <= li_OldJdEndIndex; ++k)
-                        if (mk_HitIndices.contains(k))
-                            lc_Color_ = TANGO_SKY_BLUE_1;
-                    lk_Painter.setPen(QPen(Qt::NoPen));
-                    lk_Painter.setBrush(QBrush(lc_Color_));
-                    double x = ((double)li_OldJd - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
-                    double ld_Radius = 2.0 + log((double)li_OldJdEventCount) / log(8.0);
-                    lk_Painter.drawEllipse(QPointF(x, height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 0.5))), ld_Radius, ld_Radius);
-                    double y = height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 1.0));
-                    for (int k = li_OldJdStartIndex; k <= li_OldJdEndIndex; ++k)
-                    {
-                        if (!mk_HitIndices.contains(k))
-                            continue;
-                        double x = ((floor((double)mi_EventJd_[k] / ld_BoxTime) * ld_BoxTime) - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
-                        double realx = ((double)mi_EventJd_[k] - md_CenterJd) / md_PixelTime + ld_CenterX + 3.0 + ld_FontHPadding;
-                        int li_BoxId = mi_EventJd_[k] / li_BoxSnapWidth;
-                        int li_BoxOffset = mi_EventJd_[k] % li_BoxSnapWidth;
-                        QString ls_Text = "<p><b>" + QDate::fromJulianDay(mi_EventJd_[k]).toString() + "</b> &ndash; " + mk_EventDescriptions[k] + "</p>";
-/*                        QTextDocument doc;
-                        doc.setHtml(ls_Text);
-                        doc.setHtml(doc.toPlainText());
-                        doc.setHtml(" &ndash; " + doc.toPlainText());
-                        ls_Text = doc.toPlainText();*/
-                        if (!lk_BoxSpanHeight.contains(li_BoxId))
-                            lk_BoxSpanHeight[li_BoxId] = 0.0;
-                        r_TextBoxInfo lr_TextBoxInfo;
-                        lr_TextBoxInfo.ms_Text = ls_Text;
-                        lr_TextBoxInfo.mi_BoxSpanId = li_BoxId;
-                        lr_TextBoxInfo.mi_BoxSpanOffset = li_BoxOffset;
-                        lr_TextBoxInfo.md_Position = x;
-                        lr_TextBoxInfo.md_RealPosition = realx;
-                        lr_TextBoxInfo.mc_Type = mk_EventTypes[k];
-                        lk_TextBoxes.insert(mi_EventJd_[k], lr_TextBoxInfo);
-                    }
-                }
-                if (i == mi_EventCount)
-                    break;
-                li_OldJd = li_Jd;
-                li_OldJdStartIndex = i;
-                ls_LastDescription = mk_EventDescriptions[i];
-            }
-            
-            ++li_VisibleEventCount;
-            li_LastInIndex = i;
-/*            QTextDocument doc;
-            doc.setHtml(mk_EventDescriptions[i]);*/
-            //doc.drawContents(&lk_Painter, QRectF(QPointF(((double)mi_EventJd_[i] - md_CenterJd) / md_PixelTime + ld_CenterX, height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 0.5))), QSizeF(1000.0, ld_TextRowHeight)));
-
-//             lk_Painter.drawText(((double)mi_EventJd_[i] - md_CenterJd) / md_PixelTime + ld_CenterX, height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 1.5)), doc.toPlainText());
-        }
-    }
-
-    QMultiMap<int, r_TextBoxInfo>::const_iterator lk_Iter;
-//     printf("\n");
-    double maxheight = 0.0;
-    double maxwidth = 0.0;
-    double ld_LastPosition = -1.0;
-    for (lk_Iter = lk_TextBoxes.constBegin(); lk_Iter != lk_TextBoxes.constEnd(); ++lk_Iter)
-    {
-        r_TextBoxInfo lr_Info = lk_Iter.value();
-        QTextDocument doc;
-        doc.setDefaultStyleSheet(QString("* { font-family: Bitstream Charter; font-size: 12px; color: #000;} a { color: %1; text-decoration: none; }").arg(TANGO_SKY_BLUE_1));
-        doc.setPageSize(QSizeF(mi_TextBoxWidth, height()));
-        doc.setHtml(lr_Info.ms_Text);
-        double x = lr_Info.md_Position;
-        if (x > ld_LastPosition)
-            maxheight = 0.0;
-        ld_LastPosition = x;
-        if (maxheight < height())
-        {
-            double ld_BoxSpanHeight = maxheight;
-            double y = height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 1.0)) - ld_BoxSpanHeight;
-    //         printf("%1.2f, %1.2f, %d %d\n", x, y, lr_Info.mi_BoxSpanId, lr_Info.mi_BoxSpanOffset);
-    //         QRectF lk_ResultRect = lk_FontMetrics.boundingRect(0, 0, 300, 600, Qt::TextWordWrap | Qt::AlignLeft, lr_Info.ms_Text);
-            QRectF lk_ResultRect = QRectF(QPointF(0.0, 0.0), QSizeF(doc.idealWidth(), doc.size().height()));
-            if (lr_Info.mc_Type == QChar('b'))
-            {
-                lk_Painter.setBrush(QBrush("#d7dee9"));
-                lk_Painter.setPen(QPen(TANGO_SKY_BLUE_2));
-            }
-            else if (lr_Info.mc_Type == QChar('d'))
-            {
-                lk_Painter.setBrush(QBrush("#efd1d1"));
-                lk_Painter.setPen(QPen(TANGO_SCARLET_RED_2));
-            }
-            else
-            {
-                lk_Painter.setBrush(QBrush(TANGO_ALUMINIUM_0));
-                lk_Painter.setPen(QPen(TANGO_ALUMINIUM_3));
-            }
-            lk_ResultRect.setWidth(mi_TextBoxWidth);
-            lk_Painter.drawRoundedRect(QRectF(QPointF(x + mi_BoxPadding / 2, y - lk_ResultRect.height() - 0.5), lk_ResultRect.size()), 4.0, 4.0);
-            lk_Painter.drawPixmap(QPointF(lr_Info.md_RealPosition - 5.0, y - 6.0), mk_Arrow);
-            //lk_Painter.drawText(QRectF(QPointF(x, y - lk_ResultRect.height()), lk_ResultRect.size()), Qt::TextWordWrap | Qt::AlignBottom | Qt::AlignLeft, lr_Info.ms_Text);
-            lk_Painter.setViewport(QRectF(QPointF(x + mi_BoxPadding / 2, y - lk_ResultRect.height()), size()).toRect());
-            doc.drawContents(&lk_Painter);
-            lk_Painter.setViewTransformEnabled(false);
-            double ld_Right = x + lk_ResultRect.width();
-            maxwidth = std::max<double>(ld_Right, maxwidth);
-            maxheight += lk_ResultRect.height() + mi_BoxPadding;
-        }
-    }
-    lk_Painter.setRenderHint(QPainter::Antialiasing, false);
-    lk_Painter.setPen(QPen(TANGO_SKY_BLUE_2));
-//     lk_Painter.drawText(ld_FontHPadding, ld_TextRowHeight * 2.0, QVariant(li_VisibleEventCount).toString() + " events");
+                double y = ((double)mi_EventJd_[i] - md_CenterJd) / md_PixelTime + height() / 2;
+                QString ls_Text = "<p><b>" + QDate::fromJulianDay(mi_EventJd_[i]).toString() + "</b> &ndash; " + mk_EventDescriptions[i] + "</p>";
     
+    //                        QTextDocument doc;
+    //                        doc.setHtml(ls_Text);
+    //                        doc.setHtml(doc.toPlainText());
+    //                        doc.setHtml(" &ndash; " + doc.toPlainText());
+    //                        ls_Text = doc.toPlainText();
+                r_TextBoxInfo lr_TextBoxInfo;
+                lr_TextBoxInfo.ms_Text = ls_Text;
+                lr_TextBoxInfo.x = li_RowCount * ld_FontHeight + 8;
+                lr_TextBoxInfo.y = y;
+                lr_TextBoxInfo.mc_Type = mk_EventTypes[i];
+                lk_TextBoxes.insert(mi_EventJd_[i], lr_TextBoxInfo);
+            }
+            if (i == mi_EventCount)
+                break;
+            
+//            QTextDocument doc;
+//            doc.setHtml(mk_EventDescriptions[i]);
+            //doc.drawContents(&lk_Painter, QRectF(QPointF(((double)mi_EventJd_[i] - md_CenterJd) / md_PixelTime + ld_CenterY, height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 0.5))), QSizeF(1000.0, ld_TextRowHeight)));
+
+//             lk_Painter.drawText(((double)mi_EventJd_[i] - md_CenterJd) / md_PixelTime + ld_CenterY, height() - ((double)ld_TextRowHeight * ((double)li_RowCount + 1.5)), doc.toPlainText());
+        }
+    }
+    
+    QMultiMap<int, r_TextBoxInfo>::const_iterator lk_Iter;
+    QList<QRect> lk_DrawnRects;
+//     printf("\n");
+
+    int li_DrawFirstJd = lk_TextBoxes.keys().first();
+    int li_DrawLastJd = lk_TextBoxes.keys().last();
+
+    int li_DrawLastJdCopy = li_DrawLastJd;
+    int li_MaxLevel = -1;
+    while (li_DrawLastJdCopy > 0)
+    {
+        li_MaxLevel += 1;
+        li_DrawLastJdCopy >>= 1;
+    }
+    for (int li_Level = li_MaxLevel; li_Level >= 0; --li_Level)
+    {
+        int li_TempStart = 1 << li_Level;
+        int li_Step = li_TempStart << 1;
+        int li_Mask = ~((1 << (li_Level + 1)) - 1);
+        int li_Start = (li_DrawFirstJd & li_Mask) | li_TempStart;
+        while (li_Start <= li_DrawLastJd)
+        {
+            // handle li_Start
+            li_Start += li_Step;
+            int li_Jd = li_Start;
+            if (lk_TextBoxes.contains(li_Jd))
+            {
+                foreach (r_TextBoxInfo lr_Info, lk_TextBoxes.values(li_Jd))
+                {
+                    QTextDocument doc;
+                    doc.setDefaultStyleSheet(QString("* { font-family: Bitstream Charter; font-size: 12px; color: #000;} a { color: %1; text-decoration: none; }").arg(TANGO_SKY_BLUE_1));
+                    doc.setPageSize(QSizeF(mi_TextBoxWidth, height()));
+                    doc.setHtml(lr_Info.ms_Text);
+                    double x = lr_Info.x;
+                    double y = lr_Info.y;
+                    
+                    QRectF lk_ResultRect = QRectF(QPointF(0.0, 0.0), QSizeF(doc.idealWidth(), doc.size().height()));
+                    QRect lk_QueryRect = (lk_ResultRect.translated(QPointF(x + mi_BoxPadding / 2, y - 0.5))).toRect();
+                    while (true)
+                    {
+                        bool lb_WasGood = true;
+                        foreach (QRect lk_TestRect, lk_DrawnRects)
+                        {
+                            if (!(lk_TestRect.right() < lk_QueryRect.left() ||
+                                lk_TestRect.left() > lk_QueryRect.right() ||
+                                lk_TestRect.bottom() < lk_QueryRect.top() ||
+                                lk_TestRect.top() > lk_QueryRect.bottom()))
+                            {
+                                x = lk_TestRect.right() + 5;
+                                lk_QueryRect = (lk_ResultRect.translated(QPointF(x + mi_BoxPadding / 2, y - 0.5))).toRect();
+                                lb_WasGood = false;
+                                break;
+                            }
+                        }
+                        if (lb_WasGood)
+                            break;
+                    }
+                    
+                    if (lr_Info.mc_Type == QChar('b'))
+                    {
+                        lk_Painter.setBrush(QBrush("#d7dee9"));
+                        lk_Painter.setPen(QPen(TANGO_SKY_BLUE_2));
+                    }
+                    else if (lr_Info.mc_Type == QChar('d'))
+                    {
+                        lk_Painter.setBrush(QBrush("#efd1d1"));
+                        lk_Painter.setPen(QPen(TANGO_SCARLET_RED_2));
+                    }
+                    else
+                    {
+                        lk_Painter.setBrush(QBrush(TANGO_ALUMINIUM_0));
+                        lk_Painter.setPen(QPen(TANGO_ALUMINIUM_3));
+                    }
+                    lk_Painter.drawRoundedRect(QRectF(QPointF(x + mi_BoxPadding / 2, y - 0.5), lk_ResultRect.size()), 4.0, 4.0);
+                    lk_Painter.setViewport(QRectF(QPointF(x + mi_BoxPadding / 2, y), size()).toRect());
+                    doc.drawContents(&lk_Painter);
+                    lk_Painter.setViewTransformEnabled(false);
+                    lk_ResultRect.moveTo(x + mi_BoxPadding / 2, y - 0.5);
+                    lk_DrawnRects << lk_ResultRect.toRect();
+                }
+            }
+        }
+    }
+        
     lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
     for (int i = 1; i < li_RowCount + 1; ++i)
-        lk_Painter.drawLine(0.0, height() - ld_TextRowHeight * i, width(), height() - ld_TextRowHeight * i);
+        lk_Painter.drawLine(ld_TextRowHeight * i, 0.0, ld_TextRowHeight * i, height());
 
     lk_Painter.setPen(QPen(TANGO_ALUMINIUM_2));
     lk_Painter.setBrush(QBrush(Qt::NoBrush));
@@ -536,7 +539,7 @@ void k_TimeLine::mouseMoveEvent(QMouseEvent* ak_Event_)
     mk_MouseMovePosition = ak_Event_->pos();
     if (mb_Moving)
     {
-        md_CenterJd = md_MoveStartCenterJd + (double)(mk_MoveStartPoint.x() - ak_Event_->pos().x()) * md_PixelTime;
+        md_CenterJd = md_MoveStartCenterJd + (double)(mk_MoveStartPoint.y() - ak_Event_->pos().y()) * md_PixelTime;
         fixView();
         update();
     }
@@ -570,10 +573,10 @@ void k_TimeLine::mouseReleaseEvent(QMouseEvent* ak_Event_)
 
 void k_TimeLine::wheelEvent(QWheelEvent* ak_Event_)
 {
-    int dx = ak_Event_->pos().x() - width() / 2;
-    double ld_PointerTime = ((double)dx * md_PixelTime) + md_CenterJd;
+    int dy = ak_Event_->pos().y() - height() / 2;
+    double ld_PointerTime = ((double)dy * md_PixelTime) + md_CenterJd;
     md_PixelTime *= 1.0 - (double)ak_Event_->delta() * 0.001;
-    md_CenterJd = ld_PointerTime - md_PixelTime * dx;
+    md_CenterJd = ld_PointerTime - md_PixelTime * dy;
     fixView();
     update();
     setAnimationInterval();
@@ -618,25 +621,25 @@ void k_TimeLine::keyPressEvent(QKeyEvent* ak_Event_)
 
 void k_TimeLine::fixView()
 {
-    double ld_CenterX = (double)width() * 0.5;
-    double ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
-    double ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
+    double ld_CenterY = (double)width() * 0.5;
+    double ld_LeftJd = md_CenterJd - ld_CenterY * md_PixelTime;
+    double ld_RightJd = md_CenterJd + ld_CenterY * md_PixelTime;
     if (ld_LeftJd < 4748.0)
     {
         md_CenterJd += 4748.0 - ld_LeftJd;
-        ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
-        ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
+        ld_LeftJd = md_CenterJd - ld_CenterY * md_PixelTime;
+        ld_RightJd = md_CenterJd + ld_CenterY * md_PixelTime;
     }
     if (ld_RightJd > 5373468.0)
     {
         md_CenterJd += 5373468.0 - ld_RightJd;
-        ld_LeftJd = md_CenterJd - ld_CenterX * md_PixelTime;
-        ld_RightJd = md_CenterJd + ld_CenterX * md_PixelTime;
+        ld_LeftJd = md_CenterJd - ld_CenterY * md_PixelTime;
+        ld_RightJd = md_CenterJd + ld_CenterY * md_PixelTime;
     }
     if (ld_LeftJd < 4748.0)
     {
         md_CenterJd = (3437698.0 + 4748.0) * 0.5;
-        md_PixelTime = (md_CenterJd - 4748.0) / ld_CenterX;
+        md_PixelTime = (md_CenterJd - 4748.0) / ld_CenterY;
     }
 }
 
