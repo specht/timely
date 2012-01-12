@@ -1,13 +1,12 @@
 now = 0.0;
-time_per_pixel = 0.09;
+time_per_pixel = 0.09 * 100.0;
 var calendar = $.calendars.instance();
 var date = $.calendars.newDate();
-console.log(calendar);
 box_hash = {};
 
 function init()
 {
-    now = $.calendars.newDate().toJD();
+    now = $.calendars.newDate().toJD() - 365 * 20 - 100;
 }
 
 function update()
@@ -22,21 +21,30 @@ function update()
         url: '/events/' + (time_min - time_padding) + '/' + (time_max + time_padding) + '/0',
         success: function(data)
         {
-            $('div.box').remove();
-            
             $.each(data, function(index, element)
             {
-                text = element.content;
-                date = calendar.formatDate("M d YYYY", calendar.fromJD(element.t));
-                text = date + ' &ndash; ' + text;
-                if (element.type == 'd')
-                    text = '&dagger;&nbsp' + text;
-                else if (element.type == 'b')
-                    text = '&lowast;&nbsp' + text;
-                $('div#canvas').append("<div class='box' id='e" + element.id + "'>" + text + "</div>");
-                box = $('#e' + element.id);
+                var box;
+                if (!(element.id in box_hash))
+                {
+                    text = element.content;
+                    date = calendar.formatDate("M d YYYY", calendar.fromJD(element.t));
+                    text = date + ' &ndash; ' + text;
+                    if (element.type == 'd')
+                        text = "<span style='color: #cc0000; font-weight: bold;'>&dagger;</span>&nbsp" + text;
+                    else if (element.type == 'b')
+                        text = "<span style='color: #4e9a06; font-weight: bold;'>&lowast;</span>&nbsp" + text;
+                    $('div#canvas').append("<div class='box' style='z-index: " + element.relevance + ";' id='e" + element.id + "'>" + text + "</div>");
+                    box = $('#e' + element.id);
+                    box_hash[element.id] = box;
+                    box.css('left', '' + Math.random() * ($('#canvas').width() - 300) + 'px');
+                }
+                else
+                {
+                    box = box_hash[element.id];
+                }
                 box.css('top', '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px');
             });
+            console.log("Got " + Object.keys(box_hash).length + " boxes on the canvas.");
         }
     })
 }
