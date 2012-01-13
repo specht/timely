@@ -61,7 +61,7 @@ app.get('/events/:from/:to/:offset', function(req, res)
 //     width = 100.0;
     q = "SELECT * FROM `events` WHERE `t` >= " + req.params.from + 
         " AND `t` <= " + req.params.to + 
-        " ORDER BY `relevance` DESC LIMIT " + req.params.offset + ", 32;";
+        " ORDER BY `relevance` DESC LIMIT " + req.params.offset + ", 100;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)

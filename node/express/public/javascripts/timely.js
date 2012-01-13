@@ -11,6 +11,7 @@ function init()
 
 function update()
 {
+    canvas_width = $('#canvas').width();
     canvas_height = $('#canvas').height();
     time_range = time_per_pixel * canvas_height;
     time_min = now - time_range * 0.5;
@@ -21,6 +22,7 @@ function update()
         url: '/events/' + (time_min - time_padding) + '/' + (time_max + time_padding) + '/0',
         success: function(data)
         {
+            remove_boxes = jQuery.extend({}, box_hash);
             $.each(data, function(index, element)
             {
                 var box;
@@ -43,20 +45,25 @@ function update()
                     box.mouseleave(function() {
                         $(this).css('z-index', $(this).data('relevance'));
                     });
-                    box.css('left', '' + Math.random() * ($('#canvas').width() - 300) + 'px');
+                    box.css('left', '' + Math.random() * (canvas_width - 300) + 'px');
                     box.css('opacity', 0.0);
-                    box.css('top', '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px');
+                    box.css('top', '' + canvas_height - Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height + box.height() / 2) + 'px');
                     box.animate({'opacity': 1.0});
                 }
                 else
                 {
                     box = box_hash[element.id];
-                    box.animate({'top': '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px'},
+                    box.animate({'top': '' + canvas_height - Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height + box.height() / 2) + 'px'},
                                 {queue: false, duration: 200});
+                    delete remove_boxes[element.id];
                 }
 //                 box.css('top', '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px');
             });
-            console.log("Got " + Object.keys(box_hash).length + " boxes on the canvas.");
+            jQuery.each(remove_boxes, function(index, element) {
+                element.remove();
+                delete box_hash[index];
+            });
+//             console.log("Got " + Object.keys(box_hash).length + " boxes on the canvas.");
         }
     })
 }
@@ -79,8 +86,8 @@ $(document).mousewheel(function(event, delta) {
             time_per_pixel *= 1.0 / 1.2;
     }
     else
-        now -= delta * time_per_pixel * 100;
-    console.log("now: " + now + ", time_per_pixel: " + time_per_pixel);
+        now += delta * time_per_pixel * 100;
+//     console.log("now: " + now + ", time_per_pixel: " + time_per_pixel);
     update();
 });
     
