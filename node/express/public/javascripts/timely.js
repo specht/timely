@@ -1,12 +1,12 @@
 now = 0.0;
-time_per_pixel = 0.09;// * 100.0;
+time_per_pixel = 0.05;// * 100.0;
 var calendar = $.calendars.instance();
 var date = $.calendars.newDate();
 box_hash = {};
 
 function init()
 {
-    now = $.calendars.newDate().toJD();
+    now = $.calendars.newDate().toJD() - 0.3 * $('#canvas').height() * time_per_pixel;
 }
 
 function update()
