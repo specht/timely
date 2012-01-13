@@ -51,7 +51,8 @@ function update()
                 else
                 {
                     box = box_hash[element.id];
-                    box.animate({'top': '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px'});
+                    box.animate({'top': '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px'},
+                                {queue: false, duration: 200});
                 }
 //                 box.css('top', '' + Math.floor((element.t - time_min) / (time_max - time_min) * canvas_height - box.height() / 2) + 'px');
             });
@@ -73,12 +74,13 @@ $(document).mousewheel(function(event, delta) {
     if (event.altKey)
     {
         if (delta < 0)
-            time_per_pixel *= 1.08;
+            time_per_pixel *= 1.2;
         else
-            time_per_pixel *= 0.92;
+            time_per_pixel *= 1.0 / 1.2;
     }
     else
         now -= delta * time_per_pixel * 100;
+    console.log("now: " + now + ", time_per_pixel: " + time_per_pixel);
     update();
 });
     
