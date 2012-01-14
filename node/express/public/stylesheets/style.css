@@ -47,7 +47,7 @@ div.box
     background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(238,238,236,1) 100%);
     background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(238,238,236,1) 100%);
     background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(238,238,236,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeec',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeec',GradientType=0 ); 
 }
 
 #searchbox
@@ -58,4 +58,14 @@ div.box
     font-size: 16px;
     padding: 4px;
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.death
+{
+    border: 1px solid #cc0000!important;
+}
+
+.birth
+{
+    border: 1px solid #73d216!important;
 }

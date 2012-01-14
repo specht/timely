@@ -46,19 +46,33 @@ app.get('/events/:center/:width', function(req, res)
 
 app.get('/search/:q', function(req, res)
 {
+    result = {};
     q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `relevance` DESC LIMIT 0, 100;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)
             throw err;
-        res.json(results);
+        result.results = results;
+        q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `t` ASC LIMIT 0, 1;";
+        db_client.query(q, function success(err, results, fields) 
+        {
+            if (err)
+                throw err;
+            result.first = results;
+            q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `t` DESC LIMIT 0, 1;";
+            db_client.query(q, function success(err, results, fields) 
+            {
+                if (err)
+                    throw err;
+                result.last = results;
+                res.json(result);
+            });
+        });
     });
 });
 
 app.get('/events/:from/:to/:offset', function(req, res)
 {
-//     center = 2455913.0;
-//     width = 100.0;
     q = "SELECT * FROM `events` WHERE `t` >= " + req.params.from + 
         " AND `t` <= " + req.params.to + 
         " ORDER BY `relevance` DESC LIMIT " + req.params.offset + ", 100;";
