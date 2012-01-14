@@ -47,7 +47,7 @@ app.get('/events/:center/:width', function(req, res)
 app.get('/search/:q', function(req, res)
 {
     result = {};
-    q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `relevance` DESC LIMIT 0, 100;";
+    q = "SELECT * FROM `events` WHERE `content` LIKE '%" + req.params.q + "%' ORDER BY `relevance` DESC LIMIT 0, 30;";
     db_client.query(q, function success(err, results, fields) 
     {
         if (err)
@@ -65,7 +65,14 @@ app.get('/search/:q', function(req, res)
                 if (err)
                     throw err;
                 result.last = results;
-                res.json(result);
+                q = "SELECT COUNT(`id`) as `totalCount` FROM `events` WHERE `content` LIKE '%" + req.params.q + "%';";
+                db_client.query(q, function success(err, results, fields) 
+                {
+                    if (err)
+                        throw err;
+                    result.count = results;
+                    res.json(result);
+                });
             });
         });
     });
